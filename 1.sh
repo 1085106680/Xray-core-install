@@ -1,4 +1,5 @@
 #!/bin/bash
+alias xray='bash /root/1.sh'
 xray_config="/root/xray/config.json"
 if  [ -f "$xray_config" ]; then
    xray_is_installed=1
@@ -68,7 +69,7 @@ if [ $choice == 1 ]; then
                     {
                         "id": "0bd96194-9926-47b1-8e58-0ede8d96b7d4",
                         "level": 0,
-                        "flow": "xtls-rprx-direct",
+                        //"flow": "xtls-rprx-direct",
                         "email": "love@example.com"
                     }
                 ],
@@ -87,8 +88,8 @@ if [ $choice == 1 ]; then
             },
             "streamSettings": {
                 "network": "tcp",
-                "security": "xtls",
-                "xtlsSettings": {
+                "security": "tls",
+                "tlsSettings": {
                     //"serverName": "jp.haodigtal.xyz",   //sni
                     "alpn": [
                                 "h2",
@@ -152,6 +153,7 @@ green "请编辑目录下config.json,然后 systemctl restart xray"
         url=0
         read -p "输入域名：" url
         cd & cd .acme.sh
+        bash acme.sh --set-default-ca --server letsencrypt
         bash acme.sh --issue --standalone -d  $url  --force && bash acme.sh --install-cert -d $url   --key-file       /cert/server.key    --fullchain-file /cert/server.crt
         tyblue "        证书已经生成在 /root/cert"
 
