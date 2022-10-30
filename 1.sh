@@ -5,7 +5,8 @@ if  [ -f "$xray_config" ]; then
 else 
     xray_is_installed=0
 fi
-
+xray() { bash /root/1.sh
+}
 
 green()                            #原谅绿
 {
@@ -18,8 +19,9 @@ tyblue()                           #天依蓝
 }
 
 
+chmod +x 1.sh
 
-alias xray=bash /root/1.sh
+
     echo
     [ $xray_is_installed -eq 1 ] && xray_status="\\033[32m已安装" || xray_status="\\033[31m未安装"
     systemctl -q is-active xray && xray_status+="                \\033[32m运行中" || xray_status+="                \\033[31m未运行"
@@ -33,6 +35,7 @@ alias xray=bash /root/1.sh
     green   "   4. 重启 xray-core"
     green   "   5. 关闭 xray-core"
     green   "   6. 开启 原版BBR"
+    green   "   0. 创建脚本快捷启动~~~执行 xray"
     echo
     echo
 
@@ -145,7 +148,7 @@ systemctl enable --now xray
 green "写入Ok!，执行 systemctl status xray 查看服务状态"
 systemctl status xray
 green "请编辑目录下config.json,然后 systemctl restart xray"
-
+    xray
     elif  [ $choice == 2 ]; then
         tyblue  "    acme安装|更新 证书" 
         apt update & apt install socat
@@ -158,18 +161,20 @@ green "请编辑目录下config.json,然后 systemctl restart xray"
         bash acme.sh --set-default-ca --server letsencrypt
         bash acme.sh --issue --standalone -d  $url  --force && bash acme.sh --install-cert -d $url   --key-file       /cert/server.key    --fullchain-file /cert/server.crt
         tyblue "        证书已经生成在 /root/cert"
-
+        xray
     elif  [ $choice == 3 ]; then
         tyblue "    systemd xray-core服务状态"
         systemctl status xray
-
+        xray
     elif  [ $choice == 4 ]; then
         tyblue "    重启 xray-core成功"
         systemctl restart xray
+        xray
 
     elif  [ $choice == 5 ]; then
         tyblue  "   关闭xray-core"
         systemctl stop xray
+        xray
     elif  [ $choice == 6 ]; then
         tyblue  "   开启原版BBR"
         echo net.core.default_qdisc=fq >> /etc/sysctl.conf
@@ -177,7 +182,11 @@ green "请编辑目录下config.json,然后 systemctl restart xray"
         sudo sysctl -p
         tyblue  "   检测是否开启~~~"
         sudo sysctl net.ipv4.tcp_available_congestion_control
-
+        xray
+    elif [ $choice == 0 ]; then
+            tyblue  "   创建脚本快捷启动~~~执行xray"
+            echo  "alias xray='bash /root/1.sh'" >> /etc/bash.bashrc && source /etc/bash.bashrc
+            xray
     fi
 
 
