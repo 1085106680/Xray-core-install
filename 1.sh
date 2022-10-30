@@ -1,5 +1,4 @@
 #!/bin/bash
-alias xray='bash /root/1.sh'
 xray_config="/root/xray/config.json"
 if  [ -f "$xray_config" ]; then
    xray_is_installed=1
@@ -18,6 +17,9 @@ tyblue()                           #天依蓝
     echo -e "\\033[36;1m${*}\\033[0m"
 }
 
+
+
+alias xray=bash /root/1.sh
     echo
     [ $xray_is_installed -eq 1 ] && xray_status="\\033[32m已安装" || xray_status="\\033[31m未安装"
     systemctl -q is-active xray && xray_status+="                \\033[32m运行中" || xray_status+="                \\033[31m未运行"
@@ -69,7 +71,7 @@ if [ $choice == 1 ]; then
                     {
                         "id": "0bd96194-9926-47b1-8e58-0ede8d96b7d4",
                         "level": 0,
-                        //"flow": "xtls-rprx-direct",
+                        "flow": "xtls-rprx-direct",
                         "email": "love@example.com"
                     }
                 ],
@@ -88,8 +90,8 @@ if [ $choice == 1 ]; then
             },
             "streamSettings": {
                 "network": "tcp",
-                "security": "tls",
-                "tlsSettings": {
+                "security": "xtls",
+                "xtlsSettings": {
                     //"serverName": "jp.haodigtal.xyz",   //sni
                     "alpn": [
                                 "h2",
