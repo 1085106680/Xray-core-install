@@ -417,7 +417,7 @@ xray
             echo  "alias xray='bash /root/1.sh'" >> /etc/bash.bashrc && source /etc/bash.bashrc
             xray
     elif [ $choice == q ]; then
-            ctrl-c
+            exit
     fi
 
 
