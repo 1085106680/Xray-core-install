@@ -175,18 +175,7 @@ xray
                         "email": "love@example.com"
                     }
                 ],
-                "decryption": "none",
-                "fallbacks": [
-                    {
-                        "dest": 8001,
-                        "xver": 1
-                    },
-                    {
-                        "alpn": "h2",
-                        "dest": 8002,
-                        "xver": 1
-                    }
-                ]
+                "decryption": "none"
             },
             "streamSettings": {
                 "network": "tcp",
