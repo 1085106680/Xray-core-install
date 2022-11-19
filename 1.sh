@@ -24,8 +24,26 @@ red()                              #姨妈红
     echo -e "\\033[31;1m${*}\\033[0m"
 }
 
+first-install() {       
+            chmod +x /root/1.sh
+            chmod +x /root/1.sh
+            apt update & apt install lsof unzip curl socat -y 
 
-chmod +x /root/1.sh
+}
+
+aliass() {
+            cd & touch 2.sh
+            cat > /root/2.sh << EOF
+#!/bin/bash
+echo "alias xray='bash /root/1.sh' " >> ~/.bashrc
+source ~/.bashrc
+EOF
+
+            source /root/2.sh
+            rm 2.sh
+
+}
+
 
 
     echo
@@ -42,7 +60,7 @@ chmod +x /root/1.sh
     green   "   5. 重启 xray-core"
     green   "   6. 关闭 xray-core"
     green   "   7. 开启 原版BBR"
-    green   "   0. 创建脚本快捷启动~~~执行 xray"
+    green   "   0. ~~~~~~~~~~~~~~~~~~~~~"
     echo
     red    "  按q 退出  "
     echo
@@ -52,11 +70,9 @@ chmod +x /root/1.sh
 
 
     read -p "请选择：" choice
-if [ $choice == 1 ]; then
-
-        green " 开始安装 xray-core ~~~~~ "
-        green "apt update ~~~~"
-        apt update & apt install lsof unzip curl socat -y
+if [ $choice == 1 ]; then   
+        first-install && clear
+        aliass
         echo
         cd & mkdir xray 
         green " 创建程序目录 “xray” "
@@ -106,7 +122,7 @@ xray
         read -p "请选择要导入的配置：" choice1
         if [ $choice1 == 1 ]; then
             red "  选择的配置是 Trojan+tls"
-            cd & cd xray
+            cd && cd xray
             touch config.json
             cat > config.json << EOF
             {
@@ -154,7 +170,7 @@ systemctl restart xray
 xray
     elif [ $choice1 == 2 ]; then
         red "  选择的配置是 vless+tcp+xtls"
-            cd & cd xray
+            cd && cd xray
             touch config.json
             cat > config.json << EOF
 {
@@ -175,7 +191,18 @@ xray
                         "email": "love@example.com"
                     }
                 ],
-                "decryption": "none"
+                "decryption": "none",
+                "fallbacks": [
+                    {
+                        "dest": 8001,
+                        "xver": 1
+                    },
+                    {
+                        "alpn": "h2",
+                        "dest": 8002,
+                        "xver": 1
+                    }
+                ]
             },
             "streamSettings": {
                 "network": "tcp",
@@ -212,7 +239,7 @@ xray
 
         elif [ $choice1 == 3 ]; then
             red "  选择的配置是 vless+tcp+tls"
-            cd & cd xray
+            cd && cd xray
             touch config.json
             cat > config.json << EOF
             {
@@ -277,8 +304,8 @@ systemctl restart xray
 xray
     elif [ $choice1 == 4 ]; then
         red "  选择的配置是 vless+ws+tls"
-            cd & mkdir /ws
-            cd & cd xray
+            cd && mkdir /ws
+            cd && cd xray
             touch config.json
             cat > config.json << EOF
             
@@ -368,13 +395,13 @@ xray
 
     elif  [ $choice == 3 ]; then
         tyblue  "    acme安装|更新 证书" 
-        apt update & apt install socat
+        first-install
         curl https://get.acme.sh | sh -s email=gg@gg.com
-        cd & mkdir /cert
+        cd && mkdir /cert
         tyblue "        在使用 80 端口申请证书~~~~~"
         url=0
         read -p "输入域名：" url
-        cd & cd .acme.sh
+        cd && cd .acme.sh
         bash acme.sh --set-default-ca --server letsencrypt
         bash acme.sh --issue --standalone -d  $url  --force && bash acme.sh --install-cert -d $url   --key-file       /cert/server.key    --fullchain-file /cert/server.crt
         tyblue "        证书已经生成在 /root/cert"
@@ -402,8 +429,8 @@ xray
         sudo sysctl net.ipv4.tcp_available_congestion_control
         xray
     elif [ $choice == 0 ]; then
-            tyblue  "   创建脚本快捷启动~~~执行xray"
-            echo  "alias xray='bash /root/1.sh'" >> /etc/bash.bashrc && source /etc/bash.bashrc
+            tyblue  "   ~~~~~~~~~~~~~"
+
             xray
     elif [ $choice == q ]; then
             exit
