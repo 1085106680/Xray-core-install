@@ -27,20 +27,15 @@ red()                              #姨妈红
 first-install() {       
             chmod +x /root/1.sh
             chmod +x /root/1.sh
-            apt update & apt install lsof unzip curl socat -y 
+            apt update && apt install lsof unzip curl socat -y 
 
 }
 
 aliass() {
-            cd & touch 2.sh
-            cat > /root/2.sh << EOF
-#!/bin/bash
+
 echo "alias xray='bash /root/1.sh' " >> ~/.bashrc
 source ~/.bashrc
-EOF
 
-            source /root/2.sh
-            rm 2.sh
 
 }
 
@@ -74,7 +69,7 @@ if [ $choice == 1 ]; then
         first-install && clear
         aliass
         echo
-        cd & mkdir xray 
+        cd && mkdir xray 
         green " 创建程序目录 “xray” "
         cd xray
         wget https://github.com/XTLS/Xray-core/releases/download/v1.6.0/Xray-linux-64.zip 
