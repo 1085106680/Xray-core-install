@@ -70,7 +70,7 @@ if [ $choice == 1 ]; then
         first-install && clear
         aliass
         echo
-        cd && mkdir xray 
+        cd ~ && mkdir xray 
         green " 创建程序目录 “xray” "
         cd xray
         wget https://github.com/XTLS/Xray-core/releases/download/v1.6.0/Xray-linux-64.zip 
@@ -118,7 +118,7 @@ xray
         read -p "请选择要导入的配置：" choice1
         if [ $choice1 == 1 ]; then
             red "  选择的配置是 Trojan+tls"
-            cd && cd xray
+            cd ~ && cd xray
             touch config.json
             cat > config.json << EOF
             {
@@ -166,7 +166,7 @@ systemctl restart xray
 xray
     elif [ $choice1 == 2 ]; then
         red "  选择的配置是 vless+tcp+xtls"
-            cd && cd xray
+            cd ~ && cd xray
             touch config.json
             cat > config.json << EOF
 {
@@ -235,7 +235,7 @@ xray
 
         elif [ $choice1 == 3 ]; then
             red "  选择的配置是 vless+tcp+tls"
-            cd && cd xray
+            cd ~ && cd xray
             touch config.json
             cat > config.json << EOF
             {
@@ -300,8 +300,8 @@ systemctl restart xray
 xray
     elif [ $choice1 == 4 ]; then
         red "  选择的配置是 vless+ws+tls"
-            cd && mkdir /ws
-            cd && cd xray
+            cd ~ && mkdir /ws
+            cd ~ && cd xray
             touch config.json
             cat > config.json << EOF
             
@@ -381,7 +381,7 @@ xray
 }
 
 EOF
-
+echo
 systemctl restart xray
 xray
     elif [ $choice1 == 0 ]; then
@@ -393,11 +393,11 @@ xray
         tyblue  "    acme安装|更新 证书" 
         first-install
         curl https://get.acme.sh | sh -s email=gg@gg.com
-        cd && mkdir /cert
+        cd ~ && mkdir /cert
         tyblue "        在使用 80 端口申请证书~~~~~"
         url=0
         read -p "输入域名：" url
-        cd && cd .acme.sh
+        cd ~ && cd .acme.sh
         bash acme.sh --set-default-ca --server letsencrypt
         bash acme.sh --issue --standalone -d  $url  --force && bash acme.sh --install-cert -d $url   --key-file       /cert/server.key    --fullchain-file /cert/server.crt
         tyblue "        证书已经生成在 /root/cert"
