@@ -55,6 +55,7 @@ source ~/.bashrc
     green   "   5. 重启 xray-core"
     green   "   6. 关闭 xray-core"
     green   "   7. 开启 原版BBR"
+    green   "   8. 安装xanmod最新内核，并启用BBR2+FQ-PIE"
     green   "   0. ~~~~~~~~~~~~~~~~~~~~~"
     echo
     red    "  按q 退出  "
@@ -422,7 +423,19 @@ xray
         sudo sysctl -p
         tyblue  "   检测是否开启~~~"
         sudo sysctl net.ipv4.tcp_available_congestion_control
+        red "手动重启生效"
         xray
+    elif [ $choice == 8 ]; then
+            echo 'deb http://deb.xanmod.org releases main' | sudo tee /etc/apt/sources.list.d/xanmod-kernel.list    &&
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 86F7D09EE734E623                          &&
+            sudo apt update && sudo apt install linux-xanmod -y                                                     &&
+            echo 'net.core.default_qdisc = fq_pie' | sudo tee /etc/sysctl.d/90-override.config                      &&
+            sudo sysctl -p                                                                                          &&    
+            sudo tc qdisc show      
+            tyblue "~~~~~~~~google bbr2~~~~~~~"
+            red "手动重启生效"
+            
+
     elif [ $choice == 0 ]; then
             tyblue  "   ~~~~~~~~~~~~~"
 
