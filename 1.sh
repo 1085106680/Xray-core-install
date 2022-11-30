@@ -426,6 +426,7 @@ xray
         red "手动重启生效"
         xray
     elif [ $choice == 8 ]; then
+            apt update && apt install gnupg gnupg2 gnupg1
             echo 'deb http://deb.xanmod.org releases main' | sudo tee /etc/apt/sources.list.d/xanmod-kernel.list    &&
             sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 86F7D09EE734E623                          &&
             sudo apt update && sudo apt install linux-xanmod -y                                                     &&
