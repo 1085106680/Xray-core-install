@@ -73,7 +73,7 @@ if [ $choice == 1 ]; then
         cd ~ && mkdir xray 
         green " 创建程序目录 “xray” "
         cd xray
-        wget https://github.com/XTLS/Xray-core/releases/download/v1.6.0/Xray-linux-64.zip 
+        wget https://github.com/XTLS/Xray-core/releases/download/v1.7.2/Xray-linux-64.zip 
         unzip Xray-linux-64.zip  
         rm Xray-linux-64.zip
         echo
