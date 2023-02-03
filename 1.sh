@@ -1,5 +1,6 @@
 #!/bin/bash
 xray_core="/root/xray/xray"
+tag=0
 if  [ -f "$xray_core" ]; then
    xray_is_installed=1
 else 
@@ -45,7 +46,7 @@ source ~/.bashrc
     [ $xray_is_installed -eq 1 ] && xray_status="\\033[32m已安装" || xray_status="\\033[31m未安装"
     systemctl -q is-active xray && xray_status+="                \\033[32m运行中" || xray_status+="                \\033[31m未运行"
     echo
-    tyblue "           Xray-core 服务状态   ：      ${xray_status}"
+    tyblue "           Xray-core 服务状态   ：      ${xray_status} "
     echo
     echo
     green   "   1. 安装xray-core"
@@ -58,7 +59,7 @@ source ~/.bashrc
     green   "   8. 安装xanmod最新内核，并启用BBR2+FQ-PIE"
     green   "   0. ~~~~~~~~~~~~~~~~~~~~~"
     echo
-    red    "  按q 退出  "
+    red    "       enter 退出  "
     echo
     echo
 
@@ -66,14 +67,25 @@ source ~/.bashrc
 
 
     read -p "请选择：" choice
-if [ $choice == 1 ]; then   
+if [[ $choice == 1 ]]; then   
         first-install && clear
         aliass
         echo
         cd ~ && mkdir xray 
         green " 创建程序目录 “xray” "
         cd xray
-        wget https://github.com/XTLS/Xray-core/releases/download/v1.7.2/Xray-linux-64.zip 
+ #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~       
+tag=$(wget -qO- -t1 -T2 https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g')
+
+            echo "$tag"
+        download() {
+                    wget  https://github.com/XTLS/Xray-core/releases/download/$tag/Xray-linux-64.zip
+    }
+            download
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
         unzip Xray-linux-64.zip  
         rm Xray-linux-64.zip
         echo
@@ -105,18 +117,19 @@ xray
 
 
 
-    elif [ $choice == 2 ]; then
+    elif [[ $choice == 2 ]]; then
 
         echo
-        tyblue "    1.Trojan+tls"
+        tyblue "    1.Trojan+tcp+tls"
         tyblue "    2.vless+tcp+xtls"
         tyblue "    3.vless+tcp+tls"
         tyblue "    4.vless+ws+tls"
+        tyblue "    5.Trojan+ws+tls"
         tyblue "    0.返回主菜单"
         echo
 
         read -p "请选择要导入的配置：" choice1
-        if [ $choice1 == 1 ]; then
+        if [[ $choice1 == "1" ]]; then
             red "  选择的配置是 Trojan+tls"
             cd ~ && cd xray
             touch config.json
@@ -164,7 +177,7 @@ xray
 EOF
 systemctl restart xray
 xray
-    elif [ $choice1 == 2 ]; then
+    elif [[ $choice1 == 2 ]]; then
         red "  选择的配置是 vless+tcp+xtls"
             cd ~ && cd xray
             touch config.json
@@ -233,7 +246,7 @@ systemctl restart xray
 xray
 
 
-        elif [ $choice1 == 3 ]; then
+        elif [[ $choice1 == 3 ]]; then
             red "  选择的配置是 vless+tcp+tls"
             cd ~ && cd xray
             touch config.json
@@ -298,7 +311,7 @@ EOF
 
 systemctl restart xray
 xray
-    elif [ $choice1 == 4 ]; then
+    elif [[ $choice1 == 4 ]]; then
         red "  选择的配置是 vless+ws+tls"
             cd ~ && mkdir /ws
             cd ~ && cd xray
@@ -384,12 +397,76 @@ EOF
 echo
 systemctl restart xray
 xray
-    elif [ $choice1 == 0 ]; then
+ 
+
+ elif [[ $choice1 == 5 ]]; then
+        red "  选择的配置是 Trojan+ws+tls"
+            cd ~ && mkdir /ws
+            cd ~ && cd xray
+            touch config.json
+            cat > config.json << EOF
+
+{
+    "log": {
+        "loglevel": "warning"
+    },
+    "inbounds": [
+        {
+            "port": 20000,
+            "protocol": "trojan",
+            "settings": {
+                "clients": [
+                    {
+                        "password":"haoyue123123",
+                        "email": "love@example.com"
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "ws",
+                "security": "tls",
+                "wsSettings": {
+                                "acceptProxyProtocol": false,
+                                "path": "/ws",
+                                "headers": {
+                                   "Host": "qq.com"
+                                 }
+                                    },
+                "tlsSettings": {
+                    "alpn": [
+                        "http/1.1"
+                    ],
+                    "certificates": [
+                        {
+                            "certificateFile": "/cert/server.crt",
+                            "keyFile": "/cert/server.key"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "freedom"
+        }
+    ]
+}
+
+
+EOF
+echo
+systemctl restart xray
+xray
+
+
+
+    elif [[ $choice1 == 0 ]]; then
         xray
     fi
 
 
-    elif  [ $choice == 3 ]; then
+    elif  [[ $choice == 3 ]]; then
         tyblue  "    acme安装|更新 证书" 
         first-install
         curl https://get.acme.sh | sh -s email=gg@gg.com
@@ -402,21 +479,21 @@ xray
         bash acme.sh --issue --standalone -d  $url  --force && bash acme.sh --install-cert -d $url   --key-file       /cert/server.key    --fullchain-file /cert/server.crt
         tyblue "        证书已经生成在 /root/cert"
         xray
-    elif  [ $choice == 4 ]; then
+    elif  [[ $choice == 4 ]]; then
         tyblue "    systemd xray-core服务状态"
         systemctl status xray
         sleep 1s
         xray
-    elif  [ $choice == 5 ]; then
+    elif  [[ $choice == 5 ]]; then
         tyblue "    重启 xray-core成功"
         systemctl restart xray
         xray
 
-    elif  [ $choice == 6 ]; then
+    elif  [[ $choice == 6 ]]; then
         tyblue  "   关闭xray-core"
         systemctl stop xray
         xray
-    elif  [ $choice == 7 ]; then
+    elif  [[ $choice == 7 ]]; then
         tyblue  "   开启原版BBR"
         echo net.core.default_qdisc=fq >> /etc/sysctl.conf
         echo net.ipv4.tcp_congestion_control=bbr >> /etc/sysctl.conf
@@ -425,7 +502,7 @@ xray
         sudo sysctl net.ipv4.tcp_available_congestion_control
         red "手动重启生效"
         xray
-    elif [ $choice == 8 ]; then
+    elif [[ $choice == 8 ]]; then
             apt update && apt install gnupg gnupg2 gnupg1
             echo 'deb http://deb.xanmod.org releases main' | sudo tee /etc/apt/sources.list.d/xanmod-kernel.list    &&
             sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 86F7D09EE734E623                          &&
@@ -437,12 +514,10 @@ xray
             red "手动重启生效"
             
 
-    elif [ $choice == 0 ]; then
+    elif [[ $choice == 0 ]]; then
             tyblue  "   ~~~~~~~~~~~~~"
-
             xray
-    elif [ $choice == q ]; then
-            exit
+    else exit
     fi
 
 
