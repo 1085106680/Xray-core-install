@@ -55,7 +55,7 @@ source ~/.bashrc
     green   "   4. systemd xray"
     green   "   5. 重启 xray-core"
     green   "   6. 关闭 xray-core"
-    green   "   7. 开启 原版BBR"
+    green   "   7. 开启 原版BBR+pie"
     green   "   8. 安装xanmod最新内核，并启用BBR2+FQ-PIE"
     green   "   0. ~~~~~~~~~~~~~~~~~~~~~"
     echo
@@ -495,7 +495,7 @@ xray
         xray
     elif  [[ $choice == 7 ]]; then
         tyblue  "   开启原版BBR"
-        echo net.core.default_qdisc=fq >> /etc/sysctl.conf
+        echo net.core.default_qdisc=fq_pie >> /etc/sysctl.conf
         echo net.ipv4.tcp_congestion_control=bbr >> /etc/sysctl.conf
         sudo sysctl -p
         tyblue  "   检测是否开启~~~"
