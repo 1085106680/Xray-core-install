@@ -564,6 +564,10 @@ LimitNOFILE=1000000
 [Install]
 WantedBy=multi-user.target
 EOF
+echo
+systemctl enable ss
+systemctl start ss
+systemctl status ss
             xray
     else exit
     fi
