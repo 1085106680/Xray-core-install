@@ -57,7 +57,7 @@ source ~/.bashrc
     green   "   6. 关闭 xray-core"
     green   "   7. 开启 原版BBR+pie"
     green   "   8. 安装xanmod最新内核，并启用BBR2+FQ-PIE"
-    green   "   0. ~~~~~~~~~~~~~~~~~~~~~"
+    green   "   0. 安装shadowsocks-libev+v2ray-plugin websockets+tls"
     echo
     red    "       enter 退出  "
     echo
@@ -515,7 +515,55 @@ xray
             
 
     elif [[ $choice == 0 ]]; then
-            tyblue  "   ~~~~~~~~~~~~~"
+            tyblue  "           先acme生成证书！！！！"
+            
+            echo
+            apt update && apt install shadowsocks-libev shadowsocks-v2ray-plugin -y
+            echo
+            cd /etc/shadowsocks-libev && rm config.json && touch config.json
+            cat > config.json << EOF
+
+{
+    "server":["0.0.0.0"],
+    "mode":"tcp",
+    "server_port":443,
+    "local_port":1080,
+    "password":"haoyue123123",
+    "timeout":300,
+    "method":"chacha20-ietf-poly1305",
+"plugin":"ss-v2ray-plugin",
+"plugin_opts":"server;tls;path=/ws;cert=/etc/shadowsocks-libev/server.crt;key=/etc/shadowsocks-libev/server.key"
+}
+
+
+
+
+
+EOF
+            cd && cd /cert &&cp * /etc/shadowsocks-libev
+            cd && mkdir /ws
+            echo
+            green "创建systemd服务ing~~~~~"
+        echo
+cat > /etc/systemd/system/ss.service << EOF
+[Unit]
+Description=ss Service
+After=network.target nss-lookup.target
+
+[Service]
+User=root
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
+NoNewPrivileges=true
+ExecStart=ss-server -c /etc/shadowsocks-libev/config.json 
+Restart=on-failure
+RestartPreventExitStatus=23
+LimitNPROC=10000
+LimitNOFILE=1000000
+
+[Install]
+WantedBy=multi-user.target
+EOF
             xray
     else exit
     fi
