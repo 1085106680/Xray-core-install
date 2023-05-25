@@ -531,7 +531,7 @@ xray
     "password":"haoyue123123",
     "timeout":300,
     "method":"chacha20-ietf-poly1305",
-"plugin":"ss-v2ray-plugin",
+"plugin":"/etc/shadowsocks-libev/xray-plugin",
 "plugin_opts":"server;tls;path=/ws;cert=/etc/shadowsocks-libev/server.crt;key=/etc/shadowsocks-libev/server.key"
 }
 
@@ -543,30 +543,24 @@ EOF
             cd && cd /cert &&cp * /etc/shadowsocks-libev
             cd && mkdir /ws
             echo
+            cd && cd /etc/shadowsocks-libev/ && wget https://github.com/teddysun/xray-plugin/releases/download/v1.7.5/xray-plugin-linux-amd64-v1.7.5.tar.gz && echo
+            tar -xvf xray-plugin-linux-amd64-v1.7.5.tar.gz && mv xray-plugin_linux_amd64 xray-plugin && rm xray-plugin-linux-amd64-v1.7.5.tar.gz
+            echo
             green "创建systemd服务ing~~~~~"
         echo
 cat > /etc/systemd/system/ss.service << EOF
 [Unit]
-Description=ss Service
-After=network.target nss-lookup.target
-
+Description=Shadowsocks Server
+After=network.target
 [Service]
-User=root
-CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
-AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
-NoNewPrivileges=true
-ExecStart=ss-server -c /etc/shadowsocks-libev/config.json 
-Restart=on-failure
-RestartPreventExitStatus=23
-LimitNPROC=10000
-LimitNOFILE=1000000
-
+ExecStart=/usr/bin/ss-server -c /etc/shadowsocks-libev/config.json
+Restart=on-abort
 [Install]
 WantedBy=multi-user.target
 EOF
 echo
 systemctl enable ss
-systemctl start ss
+systemctl restart ss
 systemctl status ss
             xray
     else exit
