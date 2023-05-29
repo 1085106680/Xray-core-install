@@ -125,6 +125,7 @@ xray
         tyblue "    3.vless+tcp+tls"
         tyblue "    4.vless+ws+tls"
         tyblue "    5.Trojan+ws+tls"
+        tyblue "    6.vmess+ws"
         tyblue "    0.返回主菜单"
         echo
 
@@ -459,8 +460,66 @@ echo
 systemctl restart xray
 xray
 
+elif [[ $choice1 == 6 ]]; then
+    red "  选择的配置是 vmess+ws+tls"
+            cd ~ && mkdir /ws
+            cd ~ && cd xray
+            touch config.json
+            cat > config.json << EOF
+{
+    "log": {
+        "loglevel": "warning"
+    },
+    "routing": {
+        "domainStrategy": "AsIs",
+        "rules": [
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:private"
+                ],
+                "outboundTag": "block"
+            }
+        ]
+    },
+    "inbounds": [
+        {
+            "listen": "0.0.0.0",
+            "port": 8080,
+            "protocol": "vmess",
+            "security": "auto", 
+            "settings": {
+                "clients": [
+                    {
+                        "id": "0bd96194-9926-47b1-8e58-0ede8d96b7d5"
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "ws",
+                "wsSettings": {
+        "path": "/ws"
+        }
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "freedom",
+            "tag": "direct"
+        },
+        {
+            "protocol": "blackhole",
+            "tag": "block"
+        }
+    ]
+}
 
-
+EOF
+echo
+systemctl restart xray
+xray
+    
     elif [[ $choice1 == 0 ]]; then
         xray
     fi
@@ -531,7 +590,7 @@ xray
     "password":"haoyue123123",
     "timeout":300,
     "method":"chacha20-ietf-poly1305",
-"plugin":"/etc/shadowsocks-libev/xray-plugin",
+"plugin":"/etc/shadowsocks-libev/v2ray-plugin",
 "plugin_opts":"server;tls;path=/ws;cert=/etc/shadowsocks-libev/server.crt;key=/etc/shadowsocks-libev/server.key"
 }
 
