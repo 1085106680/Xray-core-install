@@ -44,9 +44,11 @@ source ~/.bashrc
 
     echo
     [ $xray_is_installed -eq 1 ] && xray_status="\\033[32m已安装" || xray_status="\\033[31m未安装"
-    systemctl -q is-active xray && xray_status+="                \\033[32m运行中" || xray_status+="                \\033[31m未运行"
-    echo
+    systemctl -q is-active xray && xray_status+=" \\033[32m运行中" || xray_status+="\\033[31m未运行"
+    systemctl -q is-active ss && ss_status+=" \\033[32m运行中" || ss_status+="\\033[31m未运行"
+    echoo
     tyblue "           Xray-core 服务状态   ：      ${xray_status} "
+    tyblue "           ss-xray-plugin 服务状态   ：      ${xray_status} "
     echo
     echo
     green   "   1. 安装xray-core"
@@ -590,7 +592,7 @@ xray
     "password":"haoyue123123",
     "timeout":300,
     "method":"chacha20-ietf-poly1305",
-"plugin":"/etc/shadowsocks-libev/v2ray-plugin",
+"plugin":"/etc/shadowsocks-libev/xray-plugin",
 "plugin_opts":"server;tls;path=/ws;cert=/etc/shadowsocks-libev/server.crt;key=/etc/shadowsocks-libev/server.key"
 }
 
