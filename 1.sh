@@ -47,8 +47,8 @@ source ~/.bashrc
     systemctl -q is-active xray && xray_status+=" \\033[32m运行中" || xray_status+="\\033[31m未运行"
     systemctl -q is-active ss && ss_status+=" \\033[32m运行中" || ss_status+="\\033[31m未运行"
     echoo
-    tyblue "           Xray-core 服务状态   ：      ${xray_status} "
-    tyblue "           ss-xray-plugin 服务状态   ：      ${xray_status} "
+    tyblue "           Xray-core 服务状态   ：           ${xray_status} "
+    tyblue "           ss-xray-plugin 服务状态   ：      ${ss_status} "
     echo
     echo
     green   "   1. 安装xray-core"
