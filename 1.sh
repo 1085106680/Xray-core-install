@@ -219,7 +219,7 @@ xray
             "streamSettings": {
                 "network": "tcp",
                 "security": "tls",
-                "xtlsSettings": {
+                "tlsSettings": {
                     //"serverName": "jp.haodigtal.xyz",   //sni
                     "alpn": [
                                 "h2",
