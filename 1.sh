@@ -197,9 +197,9 @@ xray
             "settings": {
                 "clients": [
                     {
-                        "id": "0bd96194-9926-47b1-8e58-0ede8d96b7d4",
+                        "id": "haoyue123123",
                         "level": 0,
-                        "flow": "xtls-rprx-direct",
+                        "flow": "xtls-rprx-vison",
                         "email": "love@example.com"
                     }
                 ],
@@ -218,7 +218,7 @@ xray
             },
             "streamSettings": {
                 "network": "tcp",
-                "security": "xtls",
+                "security": "tls",
                 "xtlsSettings": {
                     //"serverName": "jp.haodigtal.xyz",   //sni
                     "alpn": [
