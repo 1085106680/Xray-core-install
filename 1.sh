@@ -158,7 +158,8 @@ xray
                 "security": "tls",
                 "tlsSettings": {
                     "alpn": [
-                        "http/1.1"
+                        "http/1.1",
+                        "h2"
                     ],
                     "certificates": [
                         {
@@ -555,7 +556,7 @@ xray
         systemctl stop xray
         xray
     elif  [[ $choice == 7 ]]; then
-        tyblue  "   开启原版BBR"
+        tyblue  "   开启BBR-fq_pie"
         echo net.core.default_qdisc=fq_pie >> /etc/sysctl.conf
         echo net.ipv4.tcp_congestion_control=bbr >> /etc/sysctl.conf
         sudo sysctl -p
