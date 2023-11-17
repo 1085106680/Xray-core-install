@@ -122,7 +122,7 @@ xray
     elif [[ $choice == 2 ]]; then
 
         echo
-        tyblue "    1.Trojan+tcp+tls"
+        tyblue "    1.Trojan+tcp+tls+回落80 caddy"
         tyblue "    2.vless+tcp+xtls"
         tyblue "    3.vless+tcp+tls"
         tyblue "    4.vless+ws+tls"
@@ -137,13 +137,14 @@ xray
             cd ~ && cd xray
             touch config.json
             cat > config.json << EOF
-            {
+ {
     "log": {
-        "loglevel": "warning"
+        "loglevel": "info",
+		"access":/root/xray/access.log
     },
     "inbounds": [
         {
-            "port": 443,
+            "port": 12139,
             "protocol": "trojan",
             "settings": {
                 "clients": [
@@ -151,15 +152,19 @@ xray
                         "password":"haoyue123123",
                         "email": "love@example.com"
                     }
-                ]
+                ],
+                "fallbacks": [ {
+                                "dest": "80"
+                                }
+                                ]
             },
             "streamSettings": {
                 "network": "tcp",
                 "security": "tls",
                 "tlsSettings": {
                     "alpn": [
-                        "http/1.1",
-                        "h2"
+                        "h2",
+                        "http/1.1"
                     ],
                     "certificates": [
                         {
@@ -177,7 +182,6 @@ xray
         }
     ]
 }
-
 EOF
 systemctl restart xray
 xray
