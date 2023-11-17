@@ -140,7 +140,7 @@ xray
  {
     "log": {
         "loglevel": "info",
-		"access":/root/xray/access.log
+		"access":"/root/xray/access.log"
     },
     "inbounds": [
         {
