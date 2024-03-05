@@ -36,7 +36,9 @@ source ~/.bashrc
 
 
 }
-
+xray() {
+ source /root/1.sh
+}
 
 
     echo
@@ -523,7 +525,9 @@ elif [[ $choice1 == 6 ]]; then
 EOF
 echo
 apt install nginx -y
-cd ~ && cd xray && cat > nginx.conf << EOF
+cd ~ && cd xray &&touch nginx.conf 
+echo
+cat > nginx.conf << EOF
 # 定义HTTP块
 events {
         worker_connections 1024;
@@ -545,12 +549,12 @@ http {
         location / {
         proxy_pass http://127.0.0.1:8888;
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
     }
 
@@ -560,8 +564,8 @@ echo
 cp /root/xray/nginx.conf /etc/nginx/nginx.conf
 systemctl restart nginx
 systemctl restart xray
+echo
 xray
-    
     elif [[ $choice1 == 0 ]]; then
         xray
     fi
