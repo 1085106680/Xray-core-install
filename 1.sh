@@ -22,23 +22,18 @@ red()                              #姨妈红
     echo -e "\\033[31;1m${*}\\033[0m"
 }
 
-first-install() {       
-            chmod +x /root/1.sh
-            chmod +x /root/1.sh
-            apt update && apt install lsof unzip curl socat -y 
-
+first-install() {
+	chmod +x /root/1.sh
+        apt update && apt install lsof unzip curl socat -y
 }
 
 aliass() {
-
-echo "alias xray='bash /root/1.sh' " >> ~/.bashrc
-source ~/.bashrc
-
-
+	echo "alias xray='bash /root/1.sh' " >> ~/.bashrc
+	source ~/.bashrc
 }
-function xray() {
- source /root/1.sh
-}
+
+menu() {
+
 
 
     echo
@@ -63,10 +58,10 @@ function xray() {
     red    "       enter 退出  "
     echo
     echo
+}
 
 
-
-
+    menu
     read -p "请选择：" choice
 if [[ $choice == 1 ]]; then   
         first-install && clear
@@ -114,7 +109,7 @@ WantedBy=multi-user.target
 EOF
 xray_is_installed=1
 systemctl enable --now xray
-xray
+menu
 
 
 
@@ -129,6 +124,7 @@ xray
         tyblue "    6.vmess+ws+nginx "
         tyblue "    0.返回主菜单"
         echo
+
 
         read -p "请选择要导入的配置：" choice1
         if [[ $choice1 == "1" ]]; then
@@ -183,7 +179,7 @@ xray
 }
 EOF
 systemctl restart xray
-xray
+menu
     elif [[ $choice1 == 2 ]]; then
         red "  选择的配置是 vless+tcp+xtls"
             cd ~ && cd xray
@@ -250,7 +246,7 @@ xray
 
 EOF
 systemctl restart xray
-xray
+menu
 
 
         elif [[ $choice1 == 3 ]]; then
@@ -317,7 +313,7 @@ xray
 EOF
 
 systemctl restart xray
-xray
+menu
     elif [[ $choice1 == 4 ]]; then
         red "  选择的配置是 vless+ws+tls"
             cd ~ && mkdir /ws
@@ -403,7 +399,7 @@ xray
 EOF
 echo
 systemctl restart xray
-xray
+menu
  
 
  elif [[ $choice1 == 5 ]]; then
@@ -464,7 +460,7 @@ xray
 EOF
 echo
 systemctl restart xray
-xray
+menu
 
 elif [[ $choice1 == 6 ]]; then
     red "  选择的配置是 vmess+ws+nginx"
@@ -565,9 +561,9 @@ cp /root/xray/nginx.conf /etc/nginx/nginx.conf
 systemctl restart nginx
 systemctl restart xray
 echo
-xray
+menu
     elif [[ $choice1 == 0 ]]; then
-        xray
+        menu
     fi
 
 
@@ -583,21 +579,21 @@ xray
         bash acme.sh --set-default-ca --server letsencrypt
         bash acme.sh --issue --standalone -d  $url  --force && bash acme.sh --install-cert -d $url   --key-file       /cert/server.key    --fullchain-file /cert/server.crt
         tyblue "        证书已经生成在 /root/cert"
-        xray
+        menu
     elif  [[ $choice == 4 ]]; then
         tyblue "    systemd xray-core服务状态"
         systemctl status xray
         sleep 1s
-        xray
+        menu
     elif  [[ $choice == 5 ]]; then
         tyblue "    重启 xray-core成功"
         systemctl restart xray
-        xray
+        menu
 
     elif  [[ $choice == 6 ]]; then
         tyblue  "   关闭xray-core"
         systemctl stop xray
-        xray
+        menu
     elif  [[ $choice == 7 ]]; then
         tyblue  "   开启BBR-fq_pie"
         echo net.core.default_qdisc=fq_pie >> /etc/sysctl.conf
@@ -606,7 +602,7 @@ xray
         tyblue  "   检测是否开启~~~"
         sudo sysctl net.ipv4.tcp_available_congestion_control
         red "手动重启生效"
-        xray
+        menu
     elif [[ $choice == 8 ]]; then
             apt update && apt install gnupg gnupg2 gnupg1
             echo 'deb http://deb.xanmod.org releases main' | sudo tee /etc/apt/sources.list.d/xanmod-kernel.list    &&
@@ -616,7 +612,7 @@ xray
             sudo sysctl -p                                                                                          &&    
             sudo tc qdisc show      
             tyblue "~~~~~~~~google bbr2~~~~~~~"
-            red "手动重启生效"
+            red "bbr+fq_pie已生效"
             
 
     elif [[ $choice == 0 ]]; then
@@ -667,7 +663,7 @@ echo
 systemctl enable ss
 systemctl restart ss
 systemctl status ss
-            xray
+            menu
     else exit
     fi
 
