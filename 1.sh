@@ -36,7 +36,7 @@ source ~/.bashrc
 
 
 }
-xray() {
+function xray() {
  source /root/1.sh
 }
 
