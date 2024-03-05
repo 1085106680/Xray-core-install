@@ -524,26 +524,26 @@ EOF
 echo
 apt install nginx -y
 cd ~ && cd xray && cat > nginx.conf << EOF
+# 定义HTTP块
 events {
         worker_connections 1024;
         }
 http {
+    # 定义服务器块
     server {
         # 监听端口
         listen 25565 fastopen=256;
-        
-        #server_name 
 
-        # 配置根目录q
+        # 配置根目录
         root /var/www/html;
 
         # 配置索引文件
-        index index.html;
-                tcp_nopush on;
+       # index index.html;
+        tcp_nopush on;
         tcp_nodelay on;
         # 配置访问权限
         location / {
-        proxy_pass http://127.0.0.1:8888; 
+        proxy_pass http://127.0.0.1:8888;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
