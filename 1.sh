@@ -468,14 +468,15 @@ systemctl restart xray
 xray
 
 elif [[ $choice1 == 6 ]]; then
-    red "  选择的配置是 vmess+ws+tls"
-            cd ~ && mkdir /ws
+    red "  选择的配置是 vmess+ws+nginx"
+            cd ~ && mkdir /fullcone
             cd ~ && cd xray
             touch config.json
             cat > config.json << EOF
 {
     "log": {
-        "loglevel": "warning"
+        "loglevel": "warning",
+        "access": "/root/xray/access.log"
     },
     "routing": {
         "domainStrategy": "AsIs",
@@ -491,21 +492,21 @@ elif [[ $choice1 == 6 ]]; then
     },
     "inbounds": [
         {
-            "listen": "0.0.0.0",
-            "port": 8080,
+            "listen": "127.0.0.1",
+            "port": 8888,
             "protocol": "vmess",
             "security": "auto", 
             "settings": {
                 "clients": [
                     {
-                        "id": "0bd96194-9926-47b1-8e58-0ede8d96b7d5"
+                        "id": "c707c459-e368-5297-8a44-c5e4cbcde9d8"
                     }
                 ]
             },
             "streamSettings": {
                 "network": "ws",
                 "wsSettings": {
-        "path": "/ws"
+                 "path": "/fullcone"
         }
             }
         }
@@ -524,6 +525,43 @@ elif [[ $choice1 == 6 ]]; then
 
 EOF
 echo
+apt install nginx -y
+cd ~ && cd xray && cat > nginx.conf << EOF
+events {
+        worker_connections 1024;
+        }
+http {
+    server {
+        # 监听端口80
+        listen 25565 fastopen=256;
+        
+        #server_name hks.haoge666.xyz;
+
+        # 配置根目录q
+        root /var/www/html;
+
+        # 配置索引文件
+        index index.html;
+                tcp_nopush on;
+        tcp_nodelay on;
+        # 配置访问权限
+        location / {
+        proxy_pass http://127.0.0.1:8888;  # 将请求代理到本地的3000端口
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    }
+
+}
+EOF
+echo
+cp /root/xray/nginx.conf /etc/nginx/nginx.conf
+systemctl restart nignx
 systemctl restart xray
 xray
     
