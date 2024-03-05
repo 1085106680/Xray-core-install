@@ -535,7 +535,7 @@ http {
         # 监听端口80
         listen 25565 fastopen=256;
         
-        #server_name hks.haoge666.xyz;
+        #server_name 
 
         # 配置根目录q
         root /var/www/html;
@@ -546,7 +546,7 @@ http {
         tcp_nodelay on;
         # 配置访问权限
         location / {
-        proxy_pass http://127.0.0.1:8888;  # 将请求代理到本地的3000端口
+        proxy_pass http://127.0.0.1:8888; 
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
