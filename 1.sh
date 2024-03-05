@@ -7,7 +7,8 @@ else
     xray_is_installed=0
 fi
 
-xray() {    bash /root/1.sh
+xray() {    
+      bash /root/1.sh
 }
 
 green()                            #原谅绿
