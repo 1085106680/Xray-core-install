@@ -127,7 +127,7 @@ xray
         tyblue "    3.vless+tcp+tls"
         tyblue "    4.vless+ws+tls"
         tyblue "    5.Trojan+ws+tls"
-        tyblue "    6.vmess+ws"
+        tyblue "    6.vmess+ws+nginx "
         tyblue "    0.返回主菜单"
         echo
 
@@ -532,7 +532,7 @@ events {
         }
 http {
     server {
-        # 监听端口80
+        # 监听端口
         listen 25565 fastopen=256;
         
         #server_name 
@@ -561,7 +561,7 @@ http {
 EOF
 echo
 cp /root/xray/nginx.conf /etc/nginx/nginx.conf
-systemctl restart nignx
+systemctl restart nginx
 systemctl restart xray
 xray
     
