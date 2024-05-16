@@ -583,13 +583,11 @@ menu
     elif  [[ $choice == 4 ]]; then
         tyblue "    systemd xray-core服务状态"
         systemctl status xray
-        sleep 1s
         menu
     elif  [[ $choice == 5 ]]; then
         tyblue "    重启 xray-core成功"
         systemctl restart xray
         menu
-
     elif  [[ $choice == 6 ]]; then
         tyblue  "   关闭xray-core"
         systemctl stop xray
