@@ -23,26 +23,21 @@ red()                              #姨妈红
 }
 
 first-install() {
-	chmod +x /root/1.sh
+        chmod +x /root/1.sh
         apt update && apt install lsof unzip curl socat -y
 }
 
 aliass() {
-	echo "alias xray='bash /root/1.sh' " >> ~/.bashrc
-	source ~/.bashrc
+        echo "alias xray='bash /root/1.sh' " >> ~/.bashrc
+        source ~/.bashrc
 }
 
 menu() {
-
-
-
     echo
     [ $xray_is_installed -eq 1 ] && xray_status="\\033[32m已安装   " || xray_status="\\033[31m未安装   "
     systemctl -q is-active xray && xray_status+="\\033[32m运行中  " || xray_status+="\\033[31m未运行  "
-    systemctl -q is-active ss && ss_status+="     \\033[32m运行中  " || ss_status+="     \\033[31m未运行  "
     echo
     tyblue "           Xray-core 服务状态：    ${xray_status} "
-    tyblue "           ss-xray-plugin 服务状态：   ${ss_status} "
     echo
     echo
     green   "   1. 安装xray-core"
@@ -52,42 +47,34 @@ menu() {
     green   "   5. 重启 xray-core"
     green   "   6. 关闭 xray-core"
     green   "   7. 开启 原版BBR+pie"
-    green   "   8. 安装xanmod最新内核，并启用BBR2+FQ-PIE"
-    green   "   0. 安装shadowsocks-libev+v2ray-plugin websockets+tls"
-    echo
-    red    "       enter 退出  "
+    green   "   0. 查看日志"
     echo
     echo
-}
-
-
-    menu
-    read -p "请选择：" choice
-if [[ $choice == 1 ]]; then   
-        first-install && clear
-        aliass
-        echo
-        cd ~ && mkdir xray 
-        green " 创建程序目录 “xray” "
-        cd xray
- #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~       
-tag=$(wget -qO- -t1 -T2 https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g')
-
-            echo "$tag"
-        download() {
-                    wget  https://github.com/XTLS/Xray-core/releases/download/$tag/Xray-linux-64.zip
-    }
-            download
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-        unzip Xray-linux-64.zip  
-        rm Xray-linux-64.zip
-        echo
-        green "创建systemd服务ing~~~~~"
-        echo
-cat > /etc/systemd/system/xray.service << EOF
+		}
+while true; do
+	menu
+	read -p "请选择：" choice
+	case $choice in
+		1)
+		first-install && clear
+		aliass
+		echo
+		cd ~ && mkdir xray 
+		green " 创建程序目录 “xray” "
+		cd xray
+		tag=$(wget -qO- -t1 -T2 https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g')
+		echo "$tag"
+		download() {
+					wget  https://github.com/XTLS/Xray-core/releases/download/$tag/Xray-linux-64.zip
+					}
+		download
+		echo
+		unzip Xray-linux-64.zip  
+		rm Xray-linux-64.zip
+		echo
+		green "创建systemd服务ing~~~~~"
+		echo
+		cat > /etc/systemd/system/xray.service << EOF
 [Unit]
 Description=Xray Service
 Documentation=https://github.com/xtls
@@ -106,32 +93,28 @@ LimitNOFILE=1000000
 
 [Install]
 WantedBy=multi-user.target
+
 EOF
-xray_is_installed=1
-systemctl enable --now xray
-menu
-
-
-
-    elif [[ $choice == 2 ]]; then
-
-        echo
-        tyblue "    1.Trojan+tcp+tls+回落80 caddy"
-        tyblue "    2.vless+tcp+xtls"
-        tyblue "    3.vless+tcp+tls"
-        tyblue "    4.vless+ws+tls"
-        tyblue "    5.Trojan+ws+tls"
-        tyblue "    6.vmess+ws+nginx "
-        tyblue "    0.返回主菜单"
-        echo
-
-
-        read -p "请选择要导入的配置：" choice1
-        if [[ $choice1 == "1" ]]; then
-            red "  选择的配置是 Trojan+tls"
-            cd ~ && cd xray
-            touch config.json
-            cat > config.json << EOF
+		xray_is_installed=1
+		systemctl enable --now xray
+		;;
+		2)
+		echo
+		tyblue "    1.Trojan+tcp+tls+回落80 caddy"
+		tyblue "    2.vless+ws反代"
+		tyblue "    3.vless+tcp+tls"
+		tyblue "    4.vless+ws+tls"
+		tyblue "    5.Trojan+ws+tls"
+		tyblue "    6.vmess+ws+nginx "
+		tyblue "    0.返回主菜单"
+		echo
+		read -p "请选择要导入的配置：" choice1
+		case $choice1 in
+		1)
+		red "  选择的配置是 Trojan+tls"
+		cd ~ && cd xray
+		touch config.json
+		cat > config.json << EOF
  {
     "log": {
         "loglevel": "info",
@@ -178,82 +161,83 @@ menu
     ]
 }
 EOF
-systemctl restart xray
-menu
-    elif [[ $choice1 == 2 ]]; then
-        red "  选择的配置是 vless+tcp+xtls"
-            cd ~ && cd xray
-            touch config.json
-            cat > config.json << EOF
+		systemctl restart xray
+		;;
+		2)
+		red "  选择的配置是 vless+ws反代"
+		cd ~ && cd xray
+		touch config.json
+		cat > config.json << EOF
 {
-    "log": {
-        "loglevel": "warning"
+  "log": {
+    "loglevel": "warning",
+	"access": "/root/xray/access.log"
+	
+  },
+  "inbounds": [
+    {
+      "listen": "127.0.0.1",
+      "port": 8888,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "c707c459-e368-5297-8a44-c5e4cbcde9d8"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "ws",
+        "wsSettings": {
+          "path": "/fullcone"
+        }
+      },
+			"sniffing": {
+				"enabled": true,
+				"destOverride": [
+					"http",
+					"tls"
+				]
+			}
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "direct",
+      "protocol": "freedom",
+      "settings": {}
     },
-    "inbounds": [
-        {
-            "listen": "0.0.0.0",
-            "port": 443,
-            "protocol": "vless",
-            "settings": {
-                "clients": [
-                    {
-                        "id": "haoyue123123",
-                        "level": 0,
-                        "flow": "xtls-rprx-vison",
-                        "email": "love@example.com"
-                    }
-                ],
-                "decryption": "none",
-                "fallbacks": [
-                    {
-                        "dest": 8001,
-                        "xver": 1
-                    },
-                    {
-                        "alpn": "h2",
-                        "dest": 8002,
-                        "xver": 1
-                    }
-                ]
-            },
-            "streamSettings": {
-                "network": "tcp",
-                "security": "tls",
-                "tlsSettings": {
-                    //"serverName": "jp.haodigtal.xyz",   //sni
-                    "alpn": [
-                                "h2",
-                                 "http/1.1"
-                    ],
-                    "certificates": [
-                        {
-                            "certificateFile": "/cert/server.crt",
-                            "keyFile": "/cert/server.key"
-                        }
-                    ]
-                }
-            }
-        }
-    ],
-    "outbounds": [
-        {
-            "protocol": "freedom",
-            "tag": "direct"
-        }
+    {
+      "tag": "blocked",
+      "protocol": "blackhole",
+      "settings": {}
+    }
+  ],
+  "routing": {
+    "domainStrategy": "IPIfNonMatch",
+    "rules": [
+      {
+        "type": "field",
+        "ip": [
+          "geoip:cn",
+          "geoip:private"
+        ],
+        "outboundTag": "blocked"
+      }
     ]
+  }
 }
 
 
 EOF
-systemctl restart xray
-menu
-
-
-        elif [[ $choice1 == 3 ]]; then
-            red "  选择的配置是 vless+tcp+tls"
-            cd ~ && cd xray
-            touch config.json
-            cat > config.json << EOF
+		systemctl restart xray
+		;;
+		3)
+		red "  选择的配置是 vless+tcp+tls"
+		cd ~ && cd xray
+		touch config.json
+		cat > config.json << EOF
             {
     "log": {
         "loglevel": "warning"
@@ -312,14 +296,14 @@ menu
 
 EOF
 
-systemctl restart xray
-menu
-    elif [[ $choice1 == 4 ]]; then
+		systemctl restart xray
+		;;
+		4)
         red "  选择的配置是 vless+ws+tls"
-            cd ~ && mkdir /ws
-            cd ~ && cd xray
-            touch config.json
-            cat > config.json << EOF
+        cd ~ && mkdir /ws
+        cd ~ && cd xray
+        touch config.json
+        cat > config.json << EOF
             
             {
     "log": {
@@ -397,17 +381,15 @@ menu
 }
 
 EOF
-echo
-systemctl restart xray
-menu
- 
-
- elif [[ $choice1 == 5 ]]; then
-        red "  选择的配置是 Trojan+ws+tls"
-            cd ~ && mkdir /ws
-            cd ~ && cd xray
-            touch config.json
-            cat > config.json << EOF
+		echo
+		systemctl restart xray
+		;;
+		5)
+		red "  选择的配置是 Trojan+ws+tls"
+		cd ~ && mkdir /ws
+		cd ~ && cd xray
+		touch config.json
+		cat > config.json << EOF
 
 {
     "log": {
@@ -456,18 +438,16 @@ menu
     ]
 }
 
-
 EOF
-echo
-systemctl restart xray
-menu
-
-elif [[ $choice1 == 6 ]]; then
-    red "  选择的配置是 vmess+ws+nginx"
-            cd ~ && mkdir /fullcone
-            cd ~ && cd xray
-            touch config.json
-            cat > config.json << EOF
+		echo
+		systemctl restart xray
+		;;
+		6)
+		red "  选择的配置是 vmess+ws+nginx"
+        cd ~ && mkdir /fullcone
+        cd ~ && cd xray
+        touch config.json
+        cat > config.json << EOF
 {
     "log": {
         "loglevel": "warning",
@@ -519,17 +499,15 @@ elif [[ $choice1 == 6 ]]; then
 }
 
 EOF
-echo
-apt install nginx -y
-cd ~ && cd xray &&touch nginx.conf 
-echo
-cat > nginx.conf << EOF
-# 定义HTTP块
+		echo
+		apt install nginx -y
+		cd ~ && cd xray &&touch nginx.conf 
+		echo
+		cat > nginx.conf << EOF
 events {
         worker_connections 1024;
         }
 http {
-    # 定义服务器块
     server {
         # 监听端口
         listen 25565 fastopen=256;
@@ -556,115 +534,53 @@ http {
 
 }
 EOF
-echo
-cp /root/xray/nginx.conf /etc/nginx/nginx.conf
-systemctl restart nginx
-systemctl restart xray
-echo
-menu
-    elif [[ $choice1 == 0 ]]; then
-        menu
-    fi
-
-
-    elif  [[ $choice == 3 ]]; then
-        tyblue  "    acme安装|更新 证书" 
-        first-install
-        curl https://get.acme.sh | sh -s email=gg@gg.com
-        cd ~ && mkdir /cert
-        tyblue "        在使用 80 端口申请证书~~~~~"
-        url=0
-        read -p "输入域名：" url
-        cd ~ && cd .acme.sh
-        bash acme.sh --set-default-ca --server letsencrypt
-        bash acme.sh --issue --standalone -d  $url  --force && bash acme.sh --install-cert -d $url   --key-file       /cert/server.key    --fullchain-file /cert/server.crt
-        tyblue "        证书已经生成在 /root/cert"
-        menu
-    elif  [[ $choice == 4 ]]; then
-        tyblue "    systemd xray-core服务状态"
-        systemctl status xray
-        menu
-    elif  [[ $choice == 5 ]]; then
-        tyblue "    重启 xray-core成功"
-        systemctl restart xray
-        menu
-    elif  [[ $choice == 6 ]]; then
-        tyblue  "   关闭xray-core"
-        systemctl stop xray
-        menu
-    elif  [[ $choice == 7 ]]; then
-        tyblue  "   开启BBR-fq_pie"
-        echo net.core.default_qdisc=fq_pie >> /etc/sysctl.conf
-        echo net.ipv4.tcp_congestion_control=bbr >> /etc/sysctl.conf
-        sudo sysctl -p
-        tyblue  "   检测是否开启~~~"
-        sudo sysctl net.ipv4.tcp_available_congestion_control
-        red "手动重启生效"
-        menu
-    elif [[ $choice == 8 ]]; then
-            apt update && apt install gnupg gnupg2 gnupg1
-            echo 'deb http://deb.xanmod.org releases main' | sudo tee /etc/apt/sources.list.d/xanmod-kernel.list    &&
-            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 86F7D09EE734E623                          &&
-            sudo apt update && sudo apt install linux-xanmod -y                                                     &&
-            echo 'net.core.default_qdisc = fq_pie' | sudo tee /etc/sysctl.d/90-override.config                      &&
-            sudo sysctl -p                                                                                          &&    
-            sudo tc qdisc show      
-            tyblue "~~~~~~~~google bbr2~~~~~~~"
-            red "bbr+fq_pie已生效"
-            
-
-    elif [[ $choice == 0 ]]; then
-            tyblue  "           先acme生成证书！！！！"
-            
-            echo
-            apt update && apt install shadowsocks-libev shadowsocks-v2ray-plugin -y
-            echo
-            cd /etc/shadowsocks-libev && rm config.json && touch config.json
-            cat > config.json << EOF
-
-{
-    "server":["0.0.0.0"],
-    "mode":"tcp",
-    "server_port":443,
-    "local_port":1080,
-    "password":"haoyue123123",
-    "timeout":300,
-    "method":"chacha20-ietf-poly1305",
-"plugin":"/etc/shadowsocks-libev/xray-plugin",
-"plugin_opts":"server;tls;path=/ws;cert=/etc/shadowsocks-libev/server.crt;key=/etc/shadowsocks-libev/server.key"
-}
-
-
-
-
-
-EOF
-            cd && cd /cert &&cp * /etc/shadowsocks-libev
-            cd && mkdir /ws
-            echo
-            cd && cd /etc/shadowsocks-libev/ && wget https://github.com/teddysun/xray-plugin/releases/download/v1.7.5/xray-plugin-linux-amd64-v1.7.5.tar.gz && echo
-            tar -xvf xray-plugin-linux-amd64-v1.7.5.tar.gz && mv xray-plugin_linux_amd64 xray-plugin && rm xray-plugin-linux-amd64-v1.7.5.tar.gz
-            echo
-            green "创建systemd服务ing~~~~~"
-        echo
-cat > /etc/systemd/system/ss.service << EOF
-[Unit]
-Description=Shadowsocks Server
-After=network.target
-[Service]
-ExecStart=/usr/bin/ss-server -c /etc/shadowsocks-libev/config.json
-Restart=on-abort
-[Install]
-WantedBy=multi-user.target
-EOF
-echo
-systemctl enable ss
-systemctl restart ss
-systemctl status ss
-            menu
-    else exit
-    fi
-
-
-
+		echo
+		cp /root/xray/nginx.conf /etc/nginx/nginx.conf
+		systemctl restart nginx
+		systemctl restart xray
+		;;
+		esac
+		;;
+		3)
+		tyblue  "    acme安装|更新 证书"
+		first-install
+		curl https://get.acme.sh | sh -s email=gg@gg.com
+		cd ~ && mkdir /cert
+		tyblue "        在使用 80 端口申请证书~~~~~"
+		url=0
+		read -p "输入域名：" url
+		cd ~ && cd .acme.sh
+		bash acme.sh --set-default-ca --server letsencrypt
+		bash acme.sh --issue --standalone -d  $url  --force && bash acme.sh --install-cert -d $url   --key-file       /cert/server.key    --fullchain-file /cert/server.crt
+		tyblue "        证书已经生成在 /root/cert"
+		;;
+		4)
+		tyblue "    systemd xray-core服务状态"
+		systemctl status xray
+		;;
+		5)
+		tyblue "    重启 xray-core成功"
+		systemctl restart xray
+		;;
+		6)
+		tyblue  "   关闭xray-core"
+		systemctl stop xray
+		;;
+		7)
+		tyblue  "   开启BBR-fq_pie"
+		echo net.core.default_qdisc=fq_pie >> /etc/sysctl.conf
+		echo net.ipv4.tcp_congestion_control=bbr >> /etc/sysctl.conf
+		sudo sysctl -p
+		tyblue  "   检测是否开启~~~"
+		sudo sysctl net.ipv4.tcp_available_congestion_control
+		red " 手动重启生效"
+		;;
+		0)
+		tail -f -n100 /root/xray/access.log
+		;;
+		*)
+		echo "输入无效"
+		;;
+	esac
+done
 
