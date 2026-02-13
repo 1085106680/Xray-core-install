@@ -97,7 +97,7 @@ EOF
 		;;
 		2)
 		echo
-		tyblue "    1.Trojan+tcp+tls+回落80 caddy"
+		tyblue "    1.vless+reality"
 		tyblue "    2.vless+ws反代"
 		tyblue "    3.vless+tcp+tls"
 		tyblue "    4.vless+ws+tls"
@@ -108,52 +108,57 @@ EOF
 		read -p "请选择要导入的配置：" choice1
 		case $choice1 in
 		1)
-		red "  选择的配置是 Trojan+tls"
+		red "  选择的配置是 vless+reality"
 		cd ~ && cd xray
 		touch config.json
 		cat > config.json << EOF
- {
+{
     "log": {
-        "loglevel": "info",
-		"access":"/root/xray/access.log"
+        "loglevel": "debug"
     },
     "inbounds": [
         {
-            "port": 12139,
-            "protocol": "trojan",
+            "port": 12138,
+            "protocol": "vless",
             "settings": {
                 "clients": [
                     {
-                        "password":"haoyue123123",
-                        "email": "love@example.com"
+                        "id": "mmovomm", // run `xray uuid` to generate
+                        "flow": "xtls-rprx-vision"
                     }
                 ],
-                "fallbacks": [ {
-                                "dest": "80"
-                                }
-                                ]
+                "decryption": "none"
             },
             "streamSettings": {
                 "network": "tcp",
-                "security": "tls",
-                "tlsSettings": {
-                    "alpn": [
-                        "h2",
-                        "http/1.1"
+                "security": "reality",
+                "realitySettings": {
+                    "dest": "www.amd.com:443", // A website that support TLS1.3 and h2. You can also use `1.1.1.1:443` as dest
+                    "serverNames": [
+                        "www.amd.com"    // A server name in the cert of dest site. If you use `1.1.1.1:443` as dest, then you can leave `serverNames` empty, it is a possible ways to bypass Iran's internet speed restrictions.
                     ],
-                    "certificates": [
-                        {
-                            "certificateFile": "/cert/server.crt",
-                            "keyFile": "/cert/server.key"
-                        }
+                    "privateKey": "nODSqQugDhNR6USi8_p653xSYr3mKK5MKBUyp4zCtk0", // run `xray x25519` to generate. Public and private keys need to be corresponding.
+                    "shortIds": [// Required, list of shortIds available to clients, can be used to distinguish different clients
+                        "", // If this item exists, client shortId can be empty
+                        "0123456789abcdef" // 0 to f, length is a multiple of 2, maximum length is 16
                     ]
                 }
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": [
+                    "http",
+                    "tls",
+                    "quic"
+                ],
+                "routeOnly": true
             }
         }
     ],
     "outbounds": [
         {
-            "protocol": "freedom"
+            "protocol": "freedom",
+            "tag": "direct"
         }
     ]
 }
