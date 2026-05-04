@@ -62,7 +62,7 @@ while true; do
 		cd ~ && mkdir xray 
 		green " 创建程序目录 “xray” "
 		cd xray
-		wget  https://github.com/XTLS/Xray-core/releases/latest/Xray-linux-64.zip
+		wget  https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip
 		unzip Xray-linux-64.zip  
 		rm Xray-linux-64.zip
 		echo
