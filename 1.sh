@@ -62,13 +62,7 @@ while true; do
 		cd ~ && mkdir xray 
 		green " 创建程序目录 “xray” "
 		cd xray
-		tag=$(wget -qO- -t1 -T2 https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g')
-		echo "$tag"
-		download() {
-					wget  https://github.com/XTLS/Xray-core/releases/download/$tag/Xray-linux-64.zip
-					}
-		download
-		echo
+		wget  https://github.com/XTLS/Xray-core/releases/latest/Xray-linux-64.zip
 		unzip Xray-linux-64.zip  
 		rm Xray-linux-64.zip
 		echo
