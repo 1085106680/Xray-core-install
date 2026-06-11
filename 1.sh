@@ -110,9 +110,26 @@ EOF
     "log": {
         "loglevel": "debug"
     },
+	"routing": {
+        "domainStrategy": "IPIfNonMatch",
+        "rules": [
+            {
+                "ip": [
+                    "geoip:cn"
+                ],
+                "outboundTag": "block"
+            },
+            {
+                "domain": [
+                    "geosite:cn"
+                ],
+                "outboundTag": "block"
+            }
+        ]
+    },
     "inbounds": [
         {
-            "port": 12138,
+            "port": 443,
             "protocol": "vless",
             "settings": {
                 "clients": [
