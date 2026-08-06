@@ -110,23 +110,6 @@ EOF
     "log": {
         "loglevel": "debug"
     },
-	"routing": {
-        "domainStrategy": "IPIfNonMatch",
-        "rules": [
-            {
-                "ip": [
-                    "geoip:cn"
-                ],
-                "outboundTag": "block"
-            },
-            {
-                "domain": [
-                    "geosite:cn"
-                ],
-                "outboundTag": "block"
-            }
-        ]
-    },
     "inbounds": [
         {
             "port": 443,
@@ -134,7 +117,7 @@ EOF
             "settings": {
                 "clients": [
                     {
-                        "id": "mmovomm", // run `xray uuid` to generate
+                        "id": "mm@v@mm", // run `xray uuid` to generate
                         "flow": "xtls-rprx-vision"
                     }
                 ],
